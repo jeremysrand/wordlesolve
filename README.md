@@ -2,6 +2,9 @@
 
 This is a classic desk accessory for the Apple IIgs which solves Wordle puzzles for you.  Rather than being the game, this can be used to solve the puzzle for you by telling you the best guesses (hopefully).
 
+
+![Wordle Solver Screenshot](/wordlesolve.png "Wordle Solver Screenshot")
+
 It will give you its first guess of a five letter word.  Then, you are prompted to indicate which letters are correct.  You do so by trying a character for each letter:
 * If the letter is in the correct position, then use a '^' character to inidicate that letter is right.
 * If the letter exists in the word somewhere else but is in the wrong position, use a '?' character to indicate this.

@@ -74,6 +74,7 @@
 		9DD7FEE528899F86005EA6B4 /* words.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = words.h; sourceTree = "<group>"; };
 		9DD7FEE62889DDB3005EA6B4 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		9DD7FEE72889DEC5005EA6B4 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		9DD7FEE82889E6B0005EA6B4 /* wordlesolve.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = wordlesolve.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +93,7 @@
 			children = (
 				9DD7FEE72889DEC5005EA6B4 /* LICENSE */,
 				9DD7FEE62889DDB3005EA6B4 /* README.md */,
+				9DD7FEE82889E6B0005EA6B4 /* wordlesolve.png */,
 				9DD7FEB128899AB6005EA6B4 /* wordlesolve */,
 				9DD7FEA728899AB6005EA6B4 /* Products */,
 			);
