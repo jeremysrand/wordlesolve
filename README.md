@@ -15,6 +15,8 @@ In terms of implementation, this is a brute force approach that was done quickly
 
 With the brute force implementation, it does take a few seconds for an unaccelerated GS to make its guess.  It may take about 15 seconds for it to make its second guess.  A more efficient algorithm would bring this down and maybe make it more or less instantaneous.  This is an exercise left to the reader.
 
+[YouTube video demo on real HW](https://youtu.be/_eNhsdsFjkI)
+
 [Download a disk image](https://github.com/jeremysrand/wordlesolve/releases/download/1.0/wordlesolve.2mg)
 
 [Download a SHK archive](https://github.com/jeremysrand/wordlesolve/releases/download/1.0/wordlesolve.shk)
