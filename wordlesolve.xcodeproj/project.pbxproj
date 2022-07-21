@@ -72,6 +72,8 @@
 		9DD7FEE328899B12005EA6B4 /* valid-wordle-words.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "valid-wordle-words.txt"; sourceTree = "<group>"; };
 		9DD7FEE428899C0A005EA6B4 /* genWords.pl */ = {isa = PBXFileReference; lastKnownFileType = text.script.perl; path = genWords.pl; sourceTree = "<group>"; };
 		9DD7FEE528899F86005EA6B4 /* words.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = words.h; sourceTree = "<group>"; };
+		9DD7FEE62889DDB3005EA6B4 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		9DD7FEE72889DEC5005EA6B4 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,6 +90,8 @@
 		9DD7FE9F28899AB5005EA6B4 = {
 			isa = PBXGroup;
 			children = (
+				9DD7FEE72889DEC5005EA6B4 /* LICENSE */,
+				9DD7FEE62889DDB3005EA6B4 /* README.md */,
 				9DD7FEB128899AB6005EA6B4 /* wordlesolve */,
 				9DD7FEA728899AB6005EA6B4 /* Products */,
 			);

@@ -7,7 +7,7 @@
  *
  */
 
-#pragma cda "wordlesolve" start shutdown
+#pragma cda "Wordle Solver" start shutdown
 
 #include <Types.h>
 
