@@ -30,13 +30,24 @@
 #define BEST_WORD "AEROS"
 
 
+// Typedefs
+
+typedef struct tLetterCounts {
+    uint16_t min;
+    uint16_t max;
+} tLetterCounts;
+
 // Globals
 
 uint16_t numWords;
 char * words;
-char * lastGuess;
+char * currentGuess;
 char buffer[256];
+
 Boolean * wordsEliminated;
+tLetterCounts letterCounts[NUM_LETTERS];
+char eliminatedLetters[WORD_LEN][NUM_LETTERS + 1];
+char solvedLetters[WORD_LEN];
 uint16_t totalLetterCounts[WORD_LEN][NUM_LETTERS];
 
 // Implementation
@@ -79,18 +90,93 @@ uint32_t scoreWord(uint16_t wordIndex, char * wordPtr)
     return result;
 }
 
+void makeNextGuess(char * hints)
+{
+    
+}
+
+void promptToQuit(void)
+{
+    printf("\n\n   Press ENTER to quit...");
+    fgets(buffer, sizeof(buffer), stdin);
+}
+
+void getMatchInfo(uint16_t numGuesses)
+{
+    uint16_t i;
+    Boolean isValid = TRUE;
+    
+    do {
+        if (!isValid) {
+            printf("\n\nInvalid entry.\n  Use 'X' for letters not in the word.\n  Use '?' for letters in the word but in the wrong place.\n  Use '^' for correct letters.\n\n");
+        }
+        printf("\nGuess %u:          ", numGuesses + 1);
+        printWord(currentGuess);
+        printf("\nEnter match info: ");
+        fgets(buffer, sizeof(buffer), stdin);
+        
+        if ((buffer[0] == 'q') ||
+            (buffer[0] == 'Q'))
+            return;
+        
+        isValid = FALSE;
+        if ((strlen(buffer) == WORD_LEN + 1) &&
+            (buffer[WORD_LEN] == '\n')) {
+            buffer[WORD_LEN] == '\0';
+            isValid = TRUE;
+            for (i = 0; i < WORD_LEN; i++) {
+                switch (buffer[i])
+                {
+                    case 'x':
+                    case 'X':
+                    case '?':
+                    case '^':
+                        break;
+                    default:
+                        isValid = FALSE;
+                }
+            }
+        }
+    } while (!isValid);
+}
+
 #ifndef FIND_BEST_START_WORD
 void solvePuzzle(void)
 {
+    Boolean foundWord = FALSE;
     uint16_t numGuesses;
+    uint16_t i;
     
-    lastGuess = BEST_WORD;
+    printf("Wordle Solver\n  By Jeremy Rand\n\n");
+    
     for (numGuesses = 0; numGuesses < MAX_GUESSES; numGuesses++) {
-        printf("Guess:            ");
-        printWord(lastGuess);
-        printf("\nEnter match info: ");
-        fgets(buffer, sizeof(buffer), stdin);
+        if (numGuesses == 0)
+            currentGuess = BEST_WORD;
+        else
+            makeNextGuess(buffer);
+        getMatchInfo(numGuesses);
+        if ((buffer[0] == 'q') ||
+            (buffer[0] == 'Q')) {
+            return;
+        }
+        
+        foundWord = TRUE;
+        for (i = 0; i < WORD_LEN; i++) {
+            if (buffer[i] != '^') {
+                foundWord = FALSE;
+                break;
+            }
+        }
+        if (foundWord) {
+            printf("I solved the Wordle.  It was ");
+            printWord(currentGuess);
+            promptToQuit();
+            return;
+        }
     }
+    
+    printf("\n\nNo solution found.\n  Did you give good feedback on the letters in the target word?\n");
+    promptToQuit();
 }
 #else
 void findBestStartWord(void)
@@ -121,9 +207,22 @@ void findBestStartWord(void)
     
     printf("\nBest Word: ");
     printWord(bestWord);
-    printf("\n");
+    promptToQuit();
 }
 #endif
+
+void initState(void)
+{
+    uint16_t i;
+    
+    memset(wordsEliminated, 0, sizeof(Boolean) * numWords);
+    memset(eliminatedLetters, 0, sizeof(eliminatedLetters));
+    memset(solvedLetters, 0, sizeof(solvedLetters));
+    for (i = 0; i < NUM_LETTERS; i++) {
+        letterCounts[i].min = 0;
+        letterCounts[i].max = WORD_LEN;
+    }
+}
 
 void start(void)
 {
@@ -140,7 +239,7 @@ void start(void)
 #endif // To here...
     
     wordsEliminated = malloc(sizeof(Boolean) * numWords);
-    memset(wordsEliminated, 0, sizeof(Boolean) * numWords);
+    initState();
     
 #ifdef FIND_BEST_START_WORD
     findBestStartWord();
@@ -148,9 +247,6 @@ void start(void)
     solvePuzzle();
 #endif
     
-    printf("\n\n   Press ENTER to quit...");
-    
-    fgets(buffer, sizeof(buffer), stdin);
     free(wordsEliminated);
 }
 
