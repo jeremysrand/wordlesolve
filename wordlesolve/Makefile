@@ -46,7 +46,7 @@ EMULATOR=gsplus
 
 # Add any other directories where you are putting C or assembly source
 # files to this list:
-# SRCDIRS+=
+SRCDIRS+=$(GENDIR)
 
 # If you put your main entry point for your project in a file called main.c
 # Then you don't need to change this value.  If you want to call your entry
@@ -54,7 +54,7 @@ EMULATOR=gsplus
 ROOTCFILE=main.c
 
 # Add any arguments you want passed to the C compiler to this variable:
-CFLAGS+=
+CFLAGS+=+O
 
 # Add any arguments you want passed to the resource compiler to this variable:
 REZFLAGS+=
@@ -174,12 +174,16 @@ COPYBOOTDIRS=
 # All of your commands associated with a rule _must_ start with a tab
 # character.  Xcode makes it a bit tough to type a tab character by
 # default.  Press option-tab within Xcode to insert a tab character.
-gen:
+gen: $(GENDIR)/wordData.s
+
+$(GENDIR)/wordData.s: genWords.pl Makefile
+	genWords.pl valid-wordle-words.txt "$(GENDIR)"
 
 # For any files you generated in the gen target above, you should
 # add rules in genclean to remove those generated files when you
 # clean your build.
 genclean:
+	$(RM) $(GENDIR)/wordData.s
 
 # Do not change anything else below here...
 include make/tail.mk

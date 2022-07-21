@@ -70,6 +70,8 @@
 		9DD7FECD28899AB6005EA6B4 /* tail.mk */ = {isa = PBXFileReference; lastKnownFileType = text; path = tail.mk; sourceTree = "<group>"; };
 		9DD7FED028899AB6005EA6B4 /* wordlesolve.xcscheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = wordlesolve.xcscheme; path = ../../wordlesolve.xcodeproj/xcshareddata/xcschemes/wordlesolve.xcscheme; sourceTree = "<group>"; };
 		9DD7FEE328899B12005EA6B4 /* valid-wordle-words.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "valid-wordle-words.txt"; sourceTree = "<group>"; };
+		9DD7FEE428899C0A005EA6B4 /* genWords.pl */ = {isa = PBXFileReference; lastKnownFileType = text.script.perl; path = genWords.pl; sourceTree = "<group>"; };
+		9DD7FEE528899F86005EA6B4 /* words.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = words.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,9 +109,11 @@
 			children = (
 				9DD7FEE328899B12005EA6B4 /* valid-wordle-words.txt */,
 				9DD7FEB228899AB6005EA6B4 /* main.c */,
+				9DD7FEE528899F86005EA6B4 /* words.h */,
 				9DD7FEB428899AB6005EA6B4 /* Makefile */,
 				9DD7FEB628899AB6005EA6B4 /* make */,
 				9DD7FECF28899AB6005EA6B4 /* Supporting Files */,
+				9DD7FEE428899C0A005EA6B4 /* genWords.pl */,
 			);
 			path = wordlesolve;
 			sourceTree = "<group>";
