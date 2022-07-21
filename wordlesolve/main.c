@@ -189,6 +189,8 @@ void makeNextGuess(char * hints)
     uint32_t bestScore = 0;
     uint32_t currentScore;
     
+    printf("\n  ... Thinking ...\n");
+    
     updateKnowledge(hints);
     
     memset(totalLetterCounts, 0, sizeof(totalLetterCounts));
