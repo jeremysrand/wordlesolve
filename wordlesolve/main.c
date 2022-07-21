@@ -50,6 +50,7 @@ char eliminatedLetters[WORD_LEN][NUM_LETTERS + 1];
 char solvedLetters[WORD_LEN];
 uint16_t totalLetterCounts[WORD_LEN][NUM_LETTERS];
 
+
 // Implementation
 
 void updateLetterCount(uint16_t wordIndex, char * wordPtr)
@@ -90,8 +91,132 @@ uint32_t scoreWord(uint16_t wordIndex, char * wordPtr)
     return result;
 }
 
+void blockCharAtPosition(char ch, uint16_t pos)
+{
+    char * ptr;
+    
+    for (ptr = eliminatedLetters[pos]; *ptr != '\0'; ptr++) {
+        if (*ptr == ch)
+            return;
+    }
+    *ptr = ch;
+    ptr++;
+    *ptr = '\0';
+}
+
+void updateKnowledge(char * hints)
+{
+    static Boolean letterVisited[NUM_LETTERS];
+    uint16_t i, j;
+    uint16_t letterIndex;
+    Boolean capNumInstances;
+    uint16_t minNumInstances;
+    
+    memset(letterVisited, 0, sizeof(letterVisited));
+    for (i = 0; i < WORD_LEN; i++) {
+        letterIndex = LETTER_TO_INDEX(currentGuess[i]);
+        if (letterVisited[letterIndex])
+            continue;
+        
+        letterVisited[letterIndex] = TRUE;
+        capNumInstances = FALSE;
+        minNumInstances = 0;
+        
+        for (j = i; j < WORD_LEN; j++) {
+            if (LETTER_TO_INDEX(currentGuess[j]) != letterIndex)
+                continue;
+            
+            switch (hints[j]) {
+                case 'x':
+                case 'X':
+                    capNumInstances = TRUE;
+                    break;
+                    
+                case '?':
+                    blockCharAtPosition(currentGuess[j], j);
+                    minNumInstances++;
+                    break;
+                    
+                case '^':
+                    solvedLetters[j] = currentGuess[j];
+                    minNumInstances++;
+                    break;
+            }
+        }
+        
+        letterCounts[letterIndex].min = minNumInstances;
+        if (capNumInstances)
+            letterCounts[letterIndex].max = minNumInstances;
+    }
+        
+    
+}
+
+Boolean wordMatchesRules(char * wordPtr)
+{
+    static uint16_t currentLetterCounts[NUM_LETTERS];
+    uint16_t i;
+    uint16_t letterIndex;
+    char ch;
+    
+    memset(currentLetterCounts, 0, sizeof(currentLetterCounts));
+    for (i = 0; i < WORD_LEN; i++) {
+        ch = wordPtr[i];
+        letterIndex = LETTER_TO_INDEX(ch);
+        currentLetterCounts[letterIndex]++;
+        
+        if ((solvedLetters[i] != '\0') &&
+            (solvedLetters[i] != ch))
+            return FALSE;
+        
+        if (strchr(eliminatedLetters[i], ch) != NULL)
+            return FALSE;
+    }
+    
+    for (i = 0; i < NUM_LETTERS; i++) {
+        if ((currentLetterCounts[i] < letterCounts[i].min) ||
+            (currentLetterCounts[i] > letterCounts[i].max))
+            return FALSE;
+    }
+    
+    return TRUE;
+}
+
 void makeNextGuess(char * hints)
 {
+    uint16_t wordIndex;
+    char * wordPtr;
+    uint32_t bestScore = 0;
+    uint32_t currentScore;
+    
+    updateKnowledge(hints);
+    
+    memset(totalLetterCounts, 0, sizeof(totalLetterCounts));
+    wordPtr = words;
+    for (wordIndex = 0; wordIndex < numWords; wordIndex++, wordPtr += 5) {
+        if (wordsEliminated[wordIndex])
+            continue;
+        
+        if (!wordMatchesRules(wordPtr)) {
+            wordsEliminated[wordIndex] = TRUE;
+            continue;
+        }
+        
+        updateLetterCount(wordIndex, wordPtr);
+    }
+    
+    currentGuess = NULL;
+    wordPtr = words;
+    for (wordIndex = 0; wordIndex < numWords; wordIndex++, wordPtr += 5) {
+        if (wordsEliminated[wordIndex])
+            continue;
+        currentScore = scoreWord(wordIndex, wordPtr);
+        if (currentScore > bestScore)
+        {
+            bestScore = currentScore;
+            currentGuess = wordPtr;
+        }
+    }
     
 }
 
@@ -154,6 +279,12 @@ void solvePuzzle(void)
             currentGuess = BEST_WORD;
         else
             makeNextGuess(buffer);
+        
+        if (currentGuess == NULL) {
+            printf("\n\nCould not find a guess that mathches the criteria.\n  Did you give good feedback on the letters in the target word?\n");
+            promptToQuit();
+            return;
+        }
         getMatchInfo(numGuesses);
         if ((buffer[0] == 'q') ||
             (buffer[0] == 'Q')) {
@@ -168,7 +299,7 @@ void solvePuzzle(void)
             }
         }
         if (foundWord) {
-            printf("I solved the Wordle.  It was ");
+            printf("\nI solved the Wordle.  It was ");
             printWord(currentGuess);
             promptToQuit();
             return;
@@ -231,10 +362,10 @@ void start(void)
     // This is weird and I don't know why I need to do this but this makes it work.  Perhaps this triggers the segment to load.
     ptrNumWords = &wordData.numWords;
     numWords = *ptrNumWords;
+    words = &(wordData.words[0]);
 
 #if 0 // Delete this debug...
     printf("numWords = %u\n", numWords);
-    words = &(wordData.words[0]);
     printf("firstWord = %x %x %x %x %x\n", (uint16_t)words[0], (uint16_t)words[1], (uint16_t)words[2], (uint16_t)words[3], (uint16_t)words[4]);
 #endif // To here...
     
