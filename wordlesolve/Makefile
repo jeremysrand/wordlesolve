@@ -33,7 +33,7 @@ TARGETTYPE=cda
 # order and the first found is what will be used.  You can overrride that
 # here:
 #
-# EMULATOR=gsplus
+EMULATOR=gsplus
 # EMULATOR=mame
 # EMULATOR=gsport
 
