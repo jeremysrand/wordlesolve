@@ -13,9 +13,9 @@ Note that if the letter appears multiple times in the solution, then it is possi
 
 [YouTube video demo on real HW](https://youtu.be/_eNhsdsFjkI)
 
-[Download a disk image](https://github.com/jeremysrand/wordlesolve/releases/download/1.0/wordlesolve.2mg)
+[Download a disk image](https://github.com/jeremysrand/wordlesolve/releases/download/1.1/wordlesolve_110.2mg)
 
-[Download a SHK archive](https://github.com/jeremysrand/wordlesolve/releases/download/1.0/wordlesolve.shk)
+[Download a SHK archive](https://github.com/jeremysrand/wordlesolve/releases/download/1.1/wordlesolve110.shk)
 
 ## Implementation
 
