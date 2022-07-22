@@ -25,8 +25,6 @@ With the brute force implementation, it does take a few seconds for an unacceler
 
 Also, if you give bad feedback to the solver, perhaps saying a letter is present and then later say that it isn't present, the solver will behave oddly and likely fail to find a solution.  There is no checking to see if you are inconsistent in the feedback but in theory, there could be a check for that.
 
-I am using the standard C fgets() function for reading the input from the user and it seems like you cannot edit your responses using fgets.  So, the input parser is pretty picky and unless you type things carefully, it will likely reject what you enter and ask you to try again.  Perhaps I should be using the text tools directly rather than the C standard library.
-
 ## Future
 
 I would like to turn this into a desktop application or new desk accessory.  Probably a new desk accessory.  The text based input is prone to user error.  But if this was a GUI, then once you mark a letter as correct, then the GUI could automatically lock that character in as correct.  That way you wouldn't have to keep telling the solver over and over stuff it already knows and you don't run the risk of contradicting yourself.

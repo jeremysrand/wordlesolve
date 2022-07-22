@@ -9,6 +9,7 @@
 
 #pragma cda "Wordle Solver" start shutdown
 
+#include <texttool.h>
 #include <Types.h>
 
 #include <stdint.h>
@@ -42,7 +43,7 @@ typedef struct tLetterCounts {
 uint16_t numWords;
 char * words;
 char * currentGuess;
-char buffer[256];
+char hints[WORD_LEN];
 
 Boolean * wordsEliminated;
 tLetterCounts letterCounts[NUM_LETTERS];
@@ -104,7 +105,7 @@ void blockCharAtPosition(char ch, uint16_t pos)
     *ptr = '\0';
 }
 
-void updateKnowledge(char * hints)
+void updateKnowledge(void)
 {
     static Boolean letterVisited[NUM_LETTERS];
     uint16_t i, j;
@@ -251,7 +252,7 @@ void maybeGuessAnEliminatedWord(void)
     }
 }
 
-void makeNextGuess(char * hints, uint16_t numGuesses)
+void makeNextGuess(uint16_t numGuesses)
 {
     uint16_t wordIndex;
     char * wordPtr;
@@ -261,7 +262,7 @@ void makeNextGuess(char * hints, uint16_t numGuesses)
     
     printf("\n  ... Thinking ...\n");
     
-    updateKnowledge(hints);
+    updateKnowledge();
     
     memset(totalLetterCounts, 0, sizeof(totalLetterCounts));
     wordPtr = words;
@@ -302,8 +303,8 @@ void makeNextGuess(char * hints, uint16_t numGuesses)
 
 void promptToQuit(void)
 {
-    printf("\n\n   Press ENTER to quit...");
-    fgets(buffer, sizeof(buffer), stdin);
+    printf("\n\n   Press any key to quit...");
+    ReadChar(0);
 }
 
 void printInstructions(void)
@@ -311,9 +312,11 @@ void printInstructions(void)
     printf("  Use 'X' for letters not in the word.\n  Use '?' for letters in the word but in the wrong place.\n  Use '^' for correct letters.\n\n");
 }
 
-void getMatchInfo(uint16_t numGuesses)
+Boolean getMatchInfo(uint16_t numGuesses)
 {
+    uint16_t numCharsRead = 0;
     uint16_t i;
+    char ch;
     Boolean isValid = TRUE;
     
     do {
@@ -324,31 +327,55 @@ void getMatchInfo(uint16_t numGuesses)
         printf("\nGuess %u:          ", numGuesses + 1);
         printWord(currentGuess);
         printf("\nEnter match info: ");
-        fgets(buffer, sizeof(buffer), stdin);
+        for (i = 0; i < numCharsRead; i++)
+            putchar(hints[i]);
         
-        if ((buffer[0] == 'q') ||
-            (buffer[0] == 'Q'))
-            return;
-        
-        isValid = FALSE;
-        if ((strlen(buffer) == WORD_LEN + 1) &&
-            (buffer[WORD_LEN] == '\n')) {
-            buffer[WORD_LEN] == '\0';
-            isValid = TRUE;
-            for (i = 0; i < WORD_LEN; i++) {
-                switch (buffer[i])
-                {
-                    case 'x':
-                    case 'X':
-                    case '?':
-                    case '^':
-                        break;
-                    default:
+        isValid = TRUE;
+        while (isValid) {
+            ch = ReadChar(0);
+            ch &= 0x7f;
+            switch (ch) {
+                case 'x':
+                case 'X':
+                case '?':
+                case '^':
+                    if (numCharsRead < WORD_LEN) {
+                        hints[numCharsRead] = ch;
+                        i++;
+                        numCharsRead++;
+                        putchar(ch);
+                    } else
                         isValid = FALSE;
-                }
+                    break;
+                    
+                case 'q':
+                case 'Q':
+                case '\x1b': // escape
+                    putchar('\n');
+                    return FALSE;
+                    
+                case '\r':
+                case '\n':
+                    if (numCharsRead == WORD_LEN) {
+                        putchar('\n');
+                        return TRUE;
+                    }
+                    isValid = FALSE;
+                    break;
+                    
+                case '\x7f':
+                case '\b':
+                    if (numCharsRead > 0) {
+                        printf("\b \b");
+                        numCharsRead--;
+                    }
+                    break;
+                    
+                default:
+                    isValid = FALSE;
             }
         }
-    } while (!isValid);
+    } while (TRUE);
 }
 
 #ifndef FIND_BEST_START_WORD
@@ -365,22 +392,20 @@ void solvePuzzle(void)
         if (numGuesses == 0)
             currentGuess = BEST_WORD;
         else
-            makeNextGuess(buffer, numGuesses);
+            makeNextGuess(numGuesses);
         
         if (currentGuess == NULL) {
             printf("\n\nCould not find a guess that mathches the criteria.\n  Did you give good feedback on the letters in the target word?\n");
             promptToQuit();
             return;
         }
-        getMatchInfo(numGuesses);
-        if ((buffer[0] == 'q') ||
-            (buffer[0] == 'Q')) {
+        
+        if (!getMatchInfo(numGuesses))
             return;
-        }
         
         foundWord = TRUE;
         for (i = 0; i < WORD_LEN; i++) {
-            if (buffer[i] != '^') {
+            if (hints[i] != '^') {
                 foundWord = FALSE;
                 break;
             }
