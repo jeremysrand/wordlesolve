@@ -182,12 +182,82 @@ Boolean wordMatchesRules(char * wordPtr)
     return TRUE;
 }
 
-void makeNextGuess(char * hints)
+void maybeGuessAnEliminatedWord(void)
+{
+    static char lettersToFind[NUM_LETTERS + 1];
+    char * wordPtr;
+    char * prevWordPtr = NULL;
+    char * lettersToFindPtr = lettersToFind;
+    uint16_t wordIndex;
+    uint16_t i;
+    uint16_t bestScore = 1;
+    uint16_t currScore;
+    uint16_t numOccur;
+    uint16_t letterChanging = WORD_LEN;
+    char ch;
+    
+    // First figure out if only one letter is unknown at this point.  I could try to figure
+    // that out from the things we have learned but easiest and most reliable to go to the
+    // words that are left to find this.
+    wordPtr = words;
+    for (wordIndex = 0; wordIndex < numWords; wordIndex++, wordPtr += 5) {
+        if (wordsEliminated[wordIndex])
+            continue;
+        if (prevWordPtr != NULL) {
+            for (i = 0; i < WORD_LEN; i++) {
+                if (prevWordPtr[i] == wordPtr[i])
+                    continue;
+                
+                if (letterChanging == WORD_LEN)
+                    letterChanging = i;
+                else if (letterChanging != i) // More than one letter changing in solution still
+                    return;
+                
+                if (lettersToFind == lettersToFindPtr) {
+                    *lettersToFindPtr = prevWordPtr[i];
+                    lettersToFindPtr++;
+                }
+                *lettersToFindPtr = wordPtr[i];
+                lettersToFindPtr++;
+            }
+        }
+        prevWordPtr = wordPtr;
+    }
+    *lettersToFindPtr = '\0';
+    
+    // Now, we have the set of letters we need to eliminate in lettersToFind as a C string.
+    // We need to go through all of the words and find the single word which has the most
+    // of these candidate letters.
+    wordPtr = words;
+    for (wordIndex = 0; wordIndex < numWords; wordIndex++, wordPtr += 5) {
+        currScore = 0;
+        for (lettersToFindPtr = lettersToFind; *lettersToFindPtr != '\0'; lettersToFindPtr++) {
+            ch = *lettersToFindPtr;
+            numOccur = 0;
+            for (i = 0; i < WORD_LEN; i++) {
+                if (wordPtr[i] == ch) {
+                    numOccur++;
+                    break;
+                }
+            }
+            if (numOccur > letterCounts[ch].min)
+                currScore++;
+        }
+        
+        if (currScore > bestScore) {
+            bestScore = currScore;
+            currentGuess = wordPtr;
+        }
+    }
+}
+
+void makeNextGuess(char * hints, uint16_t numGuesses)
 {
     uint16_t wordIndex;
     char * wordPtr;
     uint32_t bestScore = 0;
     uint32_t currentScore;
+    uint16_t numWordsWithEqualScore = 0;
     
     printf("\n  ... Thinking ...\n");
     
@@ -217,15 +287,28 @@ void makeNextGuess(char * hints)
         {
             bestScore = currentScore;
             currentGuess = wordPtr;
-        }
+            numWordsWithEqualScore = 0;
+        } else if (currentScore == bestScore)
+            numWordsWithEqualScore++;
     }
     
+    // If we only have a single character to figure out and a few words left as possibility
+    // and at least two more guesses, then consider making the next guess a word which
+    // tries to figure which letter remains rather than trying to solve the puzzle.
+    if ((numWordsWithEqualScore >= 2) &&
+        (numGuesses < MAX_GUESSES - 1))
+        maybeGuessAnEliminatedWord();
 }
 
 void promptToQuit(void)
 {
     printf("\n\n   Press ENTER to quit...");
     fgets(buffer, sizeof(buffer), stdin);
+}
+
+void printInstructions(void)
+{
+    printf("  Use 'X' for letters not in the word.\n  Use '?' for letters in the word but in the wrong place.\n  Use '^' for correct letters.\n\n");
 }
 
 void getMatchInfo(uint16_t numGuesses)
@@ -235,7 +318,8 @@ void getMatchInfo(uint16_t numGuesses)
     
     do {
         if (!isValid) {
-            printf("\n\nInvalid entry.\n  Use 'X' for letters not in the word.\n  Use '?' for letters in the word but in the wrong place.\n  Use '^' for correct letters.\n\n");
+            printf("\n\nInvalid entry.\n");
+            printInstructions();
         }
         printf("\nGuess %u:          ", numGuesses + 1);
         printWord(currentGuess);
@@ -274,13 +358,14 @@ void solvePuzzle(void)
     uint16_t numGuesses;
     uint16_t i;
     
-    printf("Wordle Solver\n  By Jeremy Rand\n\n");
+    printf("Wordle Solver\n  By Jeremy Rand\n\nInstructions:\n");
+    printInstructions();
     
     for (numGuesses = 0; numGuesses < MAX_GUESSES; numGuesses++) {
         if (numGuesses == 0)
             currentGuess = BEST_WORD;
         else
-            makeNextGuess(buffer);
+            makeNextGuess(buffer, numGuesses);
         
         if (currentGuess == NULL) {
             printf("\n\nCould not find a guess that mathches the criteria.\n  Did you give good feedback on the letters in the target word?\n");
@@ -308,7 +393,7 @@ void solvePuzzle(void)
         }
     }
     
-    printf("\n\nNo solution found.\n  Did you give good feedback on the letters in the target word?\n");
+    printf("\n\Ran out of guesses.\n  Did you give good feedback on the letters in the target word?\n");
     promptToQuit();
 }
 #else
@@ -365,11 +450,6 @@ void start(void)
     ptrNumWords = &wordData.numWords;
     numWords = *ptrNumWords;
     words = &(wordData.words[0]);
-
-#if 0 // Delete this debug...
-    printf("numWords = %u\n", numWords);
-    printf("firstWord = %x %x %x %x %x\n", (uint16_t)words[0], (uint16_t)words[1], (uint16_t)words[2], (uint16_t)words[3], (uint16_t)words[4]);
-#endif // To here...
     
     wordsEliminated = malloc(sizeof(Boolean) * numWords);
     initState();
