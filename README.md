@@ -29,4 +29,4 @@ I am using the standard C fgets() function for reading the input from the user a
 
 ## Future
 
-I would like to turn this into a desktop application or new desk accessory.  Probably a new desk accessory.  The text based input
+I would like to turn this into a desktop application or new desk accessory.  Probably a new desk accessory.  The text based input is prone to user error.  But if this was a GUI, then once you mark a letter as correct, then the GUI could automatically lock that character in as correct.  That way you wouldn't have to keep telling the solver over and over stuff it already knows and you don't run the risk of contradicting yourself.
