@@ -17,6 +17,8 @@ Note that if the letter appears multiple times in the solution, then it is possi
 
 [Download a SHK archive](https://github.com/jeremysrand/wordlesolve/releases/download/1.1/wordlesolve110.shk)
 
+Also, this solver does seem to be able to solve puzzles in [WordleGS](https://github.com/dmalec/Wordle.GS) by Dan Malec.  However, using a classic desk accessory for the solver makes this pretty inconvenient on a single GS.  For each guess, you have to exit the CDA and go back to the puzzle.  And on return to the CDA, it is starting from the first guess again so you have to re-enter everything to get to the next guess.  But as described in the section below, if I implement this as a new desk accessory, then it should be more convenient to solve a wordle puzzle on a single GS.
+
 ## Implementation
 
 In terms of implementation, this is a brute force approach that was done quickly during KansasFest 2022.  The algorithm could almost definitely be made better by being smart about how words are represented in memory and eliminating large sets of words as impossible in bulk rather than one at a time.  But it does work and that was my goal.

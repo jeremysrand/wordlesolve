@@ -418,7 +418,7 @@ void solvePuzzle(void)
         }
     }
     
-    printf("\n\Ran out of guesses.\n  Did you give good feedback on the letters in the target word?\n");
+    printf("\nRan out of guesses.\n  Did you give good feedback on the letters in the target word?\n");
     promptToQuit();
 }
 #else
