@@ -7,7 +7,11 @@
  *
  */
 
+#ifdef CQ2
+#pragma cda "CQ2 Wordle Solver" start shutdown
+#else
 #pragma cda "Wordle Solver" start shutdown
+#endif
 
 #include <texttool.h>
 #include <Types.h>
@@ -28,8 +32,11 @@
 #define MAX_GUESSES 6
 
 #undef FIND_BEST_START_WORD
+#ifdef CQ2
+#define BEST_WORD "AESIR"
+#else
 #define BEST_WORD "AEROS"
-
+#endif
 
 // Typedefs
 

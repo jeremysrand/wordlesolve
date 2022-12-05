@@ -50,6 +50,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		9D510662293DA0C800D5B772 /* cq2_valid_word_list.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = cq2_valid_word_list.txt; sourceTree = "<group>"; };
 		9DD7FEA628899AB6005EA6B4 /* wordlesolve */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = wordlesolve; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DD7FEA928899AB6005EA6B4 /* wordlesolve.2mg */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = wordlesolve.2mg; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DD7FEAB28899AB6005EA6B4 /* wordlesolve.shk */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = wordlesolve.shk; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -114,6 +115,7 @@
 			isa = PBXGroup;
 			children = (
 				9DD7FEE328899B12005EA6B4 /* valid-wordle-words.txt */,
+				9D510662293DA0C800D5B772 /* cq2_valid_word_list.txt */,
 				9DD7FEB228899AB6005EA6B4 /* main.c */,
 				9DD7FEE528899F86005EA6B4 /* words.h */,
 				9DD7FEB428899AB6005EA6B4 /* Makefile */,

@@ -5,11 +5,20 @@
 
 include make/head.mk
 
+# There are two supported builds.  We build for the standard Wordle word list by default.  But if you set
+# the following variable to 1, then we build for the valid word list for Wordle on the Captain's Quarters II
+# BBS.
+BUILD_FOR_CQ2 := 1
+
 # Customize this file to control what kind of project you are working on,
 # where to find files, etc.
 
 # The name of your system or binary file to build goes here:
+ifeq ($(BUILD_FOR_CQ2),1)
+PGM=cq2wordlesolve
+else
 PGM=wordlesolve
+endif
 
 # Set the target type you would like to build.  The options are:
 # 	shell - A shell command for ORCA, GNO or other GS shell
@@ -54,7 +63,10 @@ SRCDIRS+=$(GENDIR)
 ROOTCFILE=main.c
 
 # Add any arguments you want passed to the C compiler to this variable:
-CFLAGS+=+O
+CFLAGS += +O
+ifeq ($(BUILD_FOR_CQ2),1)
+CFLAGS += -dCQ2
+endif
 
 # Add any arguments you want passed to the resource compiler to this variable:
 REZFLAGS+=
@@ -174,10 +186,16 @@ COPYBOOTDIRS=
 # All of your commands associated with a rule _must_ start with a tab
 # character.  Xcode makes it a bit tough to type a tab character by
 # default.  Press option-tab within Xcode to insert a tab character.
+ifeq ($(BUILD_FOR_CQ2),1)
+INPUT_WORD_LIST:=cq2_valid_word_list.txt
+else
+INPUT_WORD_LIST:=valid-wordle-words.txt
+endif
+
 gen: $(GENDIR)/wordData.s
 
 $(GENDIR)/wordData.s: genWords.pl Makefile
-	genWords.pl valid-wordle-words.txt "$(GENDIR)"
+	genWords.pl $(INPUT_WORD_LIST) "$(GENDIR)"
 
 # For any files you generated in the gen target above, you should
 # add rules in genclean to remove those generated files when you
