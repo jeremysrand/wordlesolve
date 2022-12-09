@@ -25,6 +25,8 @@
 
 // Defines
 
+#define VERSION "v1.2"
+
 #define WORD_LEN 5
 #define NUM_LETTERS 26
 #define LETTER_TO_INDEX(letter) ((letter) - 'A')
@@ -259,15 +261,48 @@ void maybeGuessAnEliminatedWord(void)
     }
 }
 
+BOOLEAN maybeSearchForLetters(uint16_t numGuesses)
+{
+    uint16_t numKnownLetters = 0;
+    uint16_t letterIndex;
+    uint16_t repeatCount;
+    
+    // Once we get beyond the third guess, we need to stop searching for known letters.
+    if (numGuesses > 2)
+        return FALSE;
+    
+    for (letterIndex = 0; letterIndex < NUM_LETTERS; letterIndex++)
+        numKnownLetters += letterCounts[letterIndex].min;
+    
+    if (numGuesses == 2) {
+        if (numKnownLetters > 2)
+            return FALSE;
+    } else if (numKnownLetters > 3)
+        return FALSE;
+    
+    // Once we have decided to search for unknown letters, we decrease the score of the
+    // known letters to 0.  Also, decrease score of letters known not to match to 0.
+    for (letterIndex = 0; letterIndex < NUM_LETTERS; letterIndex++)
+    {
+        for (repeatCount = 0; repeatCount < letterCounts[letterIndex].min; repeatCount++)
+            totalLetterCounts[repeatCount][letterIndex] = 0;
+        
+        for (repeatCount = letterCounts[letterIndex].max; repeatCount < WORD_LEN; repeatCount++)
+            totalLetterCounts[repeatCount][letterIndex] = 0;
+    }
+    
+    return TRUE;
+}
+
 void makeNextGuess(uint16_t numGuesses)
 {
     uint16_t wordIndex;
     char * wordPtr;
     uint32_t bestScore = 0;
     uint32_t currentScore;
-    uint16_t numWordsWithEqualScore = 0;
+    uint16_t numWordsRemaining = 0;
     
-    printf("\n  ... Thinking ...\n");
+    printf("\n  ... Thinking, ");
     
     updateKnowledge();
     
@@ -282,28 +317,32 @@ void makeNextGuess(uint16_t numGuesses)
             continue;
         }
         
+        numWordsRemaining++;
         updateLetterCount(wordIndex, wordPtr);
     }
+    
+    printf("%u word%s remaining ...\n", numWordsRemaining, (numWordsRemaining > 1 ? "s" : ""));
+    
+    BOOLEAN searchForLetters = maybeSearchForLetters(numGuesses);
     
     currentGuess = NULL;
     wordPtr = words;
     for (wordIndex = 0; wordIndex < numWords; wordIndex++, wordPtr += 5) {
-        if (wordsEliminated[wordIndex])
+        if ((!searchForLetters) &&
+            (wordsEliminated[wordIndex]))
             continue;
         currentScore = scoreWord(wordIndex, wordPtr);
         if (currentScore > bestScore)
         {
             bestScore = currentScore;
             currentGuess = wordPtr;
-            numWordsWithEqualScore = 0;
-        } else if (currentScore == bestScore)
-            numWordsWithEqualScore++;
+        }
     }
     
     // If we only have a single character to figure out and a few words left as possibility
     // and at least two more guesses, then consider making the next guess a word which
     // tries to figure which letter remains rather than trying to solve the puzzle.
-    if ((numWordsWithEqualScore >= 2) &&
+    if ((numWordsRemaining > 2) &&
         (numGuesses < MAX_GUESSES - 1))
         maybeGuessAnEliminatedWord();
 }
@@ -392,7 +431,7 @@ void solvePuzzle(void)
     uint16_t numGuesses;
     uint16_t i;
     
-    printf("Wordle Solver\n  By Jeremy Rand\n\nInstructions:\n");
+    printf("Wordle Solver " VERSION "\n  By Jeremy Rand\n\nInstructions:\n");
     printInstructions();
     
     for (numGuesses = 0; numGuesses < MAX_GUESSES; numGuesses++) {
@@ -494,7 +533,6 @@ void start(void)
     
     free(wordsEliminated);
 }
-
 
 void shutdown(void)
 {

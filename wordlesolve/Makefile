@@ -8,7 +8,7 @@ include make/head.mk
 # There are two supported builds.  We build for the standard Wordle word list by default.  But if you set
 # the following variable to 1, then we build for the valid word list for Wordle on the Captain's Quarters II
 # BBS.
-BUILD_FOR_CQ2 := 1
+BUILD_FOR_CQ2 := 0
 
 # Customize this file to control what kind of project you are working on,
 # where to find files, etc.
