@@ -15,8 +15,11 @@ typedef struct tWordData {
     char words[1];
 } tWordData;
 
-extern tWordData wordData;
+typedef struct tCountData {
+    uint16_t rank[1];
+} tCountData;
 
-extern void wordCode(void);
+extern tWordData wordData;
+extern tCountData countData;
 
 #endif /* words_h */

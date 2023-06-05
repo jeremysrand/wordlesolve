@@ -195,13 +195,13 @@ endif
 gen: $(GENDIR)/wordData.s
 
 $(GENDIR)/wordData.s: genWords.pl Makefile
-	genWords.pl $(INPUT_WORD_LIST) "$(GENDIR)"
+	genWords.pl $(INPUT_WORD_LIST) frequency-alpha-alldicts.txt "$(GENDIR)"
 
 # For any files you generated in the gen target above, you should
 # add rules in genclean to remove those generated files when you
 # clean your build.
 genclean:
-	$(RM) $(GENDIR)/wordData.s
+	$(RM) $(GENDIR)/wordData.s $(GENDIR)/countData.s
 
 # Do not change anything else below here...
 include make/tail.mk

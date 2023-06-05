@@ -35,7 +35,7 @@
 
 #undef FIND_BEST_START_WORD
 #ifdef CQ2
-#define BEST_WORD "AESIR"
+#define BEST_WORD "AROSE"
 #else
 #define BEST_WORD "AEROS"
 #endif
@@ -51,9 +51,11 @@ typedef struct tLetterCounts {
 
 uint16_t numWords;
 char * words;
+uint16_t * rank;
 char * currentGuess;
 char hints[WORD_LEN];
 
+Boolean rankedOnly;
 Boolean * wordsEliminated;
 tLetterCounts letterCounts[NUM_LETTERS];
 char eliminatedLetters[WORD_LEN][NUM_LETTERS + 1];
@@ -211,6 +213,10 @@ void maybeGuessAnEliminatedWord(void)
     // words that are left to find this.
     wordPtr = words;
     for (wordIndex = 0; wordIndex < numWords; wordIndex++, wordPtr += 5) {
+        if ((rankedOnly) &&
+            (rank[wordIndex] == 0))
+            continue;
+        
         if (wordsEliminated[wordIndex])
             continue;
         if (prevWordPtr != NULL) {
@@ -297,18 +303,19 @@ BOOLEAN maybeSearchForLetters(uint16_t numGuesses)
 void makeNextGuess(uint16_t numGuesses)
 {
     uint16_t wordIndex;
+    uint16_t guessIndex = 0;
     char * wordPtr;
     uint32_t bestScore = 0;
     uint32_t currentScore;
     uint16_t numWordsRemaining = 0;
     
-    printf("\n  ... Thinking, ");
-    
-    updateKnowledge();
-    
     memset(totalLetterCounts, 0, sizeof(totalLetterCounts));
     wordPtr = words;
     for (wordIndex = 0; wordIndex < numWords; wordIndex++, wordPtr += 5) {
+        if ((rankedOnly) &&
+            (rank[wordIndex] == 0))
+            continue;
+        
         if (wordsEliminated[wordIndex])
             continue;
         
@@ -328,14 +335,20 @@ void makeNextGuess(uint16_t numGuesses)
     currentGuess = NULL;
     wordPtr = words;
     for (wordIndex = 0; wordIndex < numWords; wordIndex++, wordPtr += 5) {
-        if ((!searchForLetters) &&
-            (wordsEliminated[wordIndex]))
-            continue;
+        if (!searchForLetters) {
+            if ((rankedOnly) &&
+                (rank[wordIndex] == 0))
+                continue;
+            if (wordsEliminated[wordIndex])
+                continue;
+        }
         currentScore = scoreWord(wordIndex, wordPtr);
-        if (currentScore > bestScore)
-        {
+        if ((currentScore > bestScore) ||
+            ((currentScore == bestScore) &&
+             (rank[wordIndex] > rank[guessIndex]))) {
             bestScore = currentScore;
             currentGuess = wordPtr;
+            guessIndex = wordIndex;
         }
     }
     
@@ -434,11 +447,22 @@ void solvePuzzle(void)
     printf("Wordle Solver " VERSION "\n  By Jeremy Rand\n\nInstructions:\n");
     printInstructions();
     
+    rankedOnly = TRUE;
     for (numGuesses = 0; numGuesses < MAX_GUESSES; numGuesses++) {
         if (numGuesses == 0)
             currentGuess = BEST_WORD;
-        else
+        else {
+            printf("\n  ... Thinking, ");
+            updateKnowledge();
             makeNextGuess(numGuesses);
+        }
+        
+        if ((rankedOnly) &&
+            (currentGuess == NULL)) {
+            printf("\n\nEliminated all common words.\n  ... Considering more rare words, n");
+            rankedOnly = FALSE;
+            makeNextGuess(numGuesses);
+        }
         
         if (currentGuess == NULL) {
             printf("\n\nCould not find a guess that mathches the criteria.\n  Did you give good feedback on the letters in the target word?\n");
@@ -481,6 +505,8 @@ void findBestStartWord(void)
     
     wordPtr = words;
     for (wordIndex = 0; wordIndex < numWords; wordIndex++, wordPtr += 5) {
+        if (rank[wordIndex] == 0)
+            continue;
         updateLetterCount(wordIndex, wordPtr);
     }
     
@@ -521,6 +547,7 @@ void start(void)
     ptrNumWords = &wordData.numWords;
     numWords = *ptrNumWords;
     words = &(wordData.words[0]);
+    rank = &(countData.rank[0]);
     
     wordsEliminated = malloc(sizeof(Boolean) * numWords);
     initState();
