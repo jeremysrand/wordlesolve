@@ -328,11 +328,13 @@ void makeNextGuess(uint16_t numGuesses)
         updateLetterCount(wordIndex, wordPtr);
     }
     
-    printf("%u word%s remaining ...\n", numWordsRemaining, (numWordsRemaining > 1 ? "s" : ""));
+    printf("%u word%s remaining ...\n", numWordsRemaining, (numWordsRemaining != 1 ? "s" : ""));
+    currentGuess = NULL;
+    if (numWordsRemaining == 0)
+        return;
     
     BOOLEAN searchForLetters = maybeSearchForLetters(numGuesses);
     
-    currentGuess = NULL;
     wordPtr = words;
     for (wordIndex = 0; wordIndex < numWords; wordIndex++, wordPtr += 5) {
         if (!searchForLetters) {
@@ -459,7 +461,7 @@ void solvePuzzle(void)
         
         if ((rankedOnly) &&
             (currentGuess == NULL)) {
-            printf("\n\nEliminated all common words.\n  ... Considering more rare words, n");
+            printf("\n\nEliminated all common words.\n  ... Considering more rare words,\n  ... Thinking, ");
             rankedOnly = FALSE;
             makeNextGuess(numGuesses);
         }
