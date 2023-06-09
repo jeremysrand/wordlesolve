@@ -14,7 +14,7 @@
 #endif
 
 #include <texttool.h>
-#include <Types.h>
+#include <TYPES.h>
 
 #include <stdint.h>
 #include <stdio.h>
