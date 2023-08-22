@@ -681,7 +681,6 @@ alkyl
 allah
 allan
 allay
-allee
 allen
 aller
 alley
@@ -3763,7 +3762,6 @@ chela
 chelp
 chema
 cheme
-chemo
 chena
 cheng
 chera
@@ -5863,7 +5861,6 @@ dwang
 dwaps
 dwarf
 dweck
-dweeb
 dwell
 dwelt
 dwine
@@ -6649,7 +6646,6 @@ falda
 falla
 falls
 fally
-false
 falun
 falus
 famed
@@ -7116,7 +7112,6 @@ flype
 flyte
 fname
 fnese
-fnord
 foals
 foaly
 foams
@@ -9719,7 +9714,6 @@ izzat
 jaala
 jabal
 jaban
-jabbz
 jabez
 jabia
 jabin
@@ -10075,7 +10069,6 @@ joyan
 joyce
 joyed
 jozef
-jrand
 jtids
 jtunn
 juana
@@ -11156,7 +11149,6 @@ laton
 latro
 latry
 latta
-latte
 latty
 latus
 lauan
@@ -14749,7 +14741,6 @@ pengo
 penis
 penki
 penna
-penne
 penni
 penny
 pense
@@ -15642,8 +15633,6 @@ query
 quest
 queue
 queys
-qugax
-qugaz
 quica
 quick
 quids
@@ -17052,7 +17041,6 @@ scult
 scums
 scups
 scurf
-scurl
 scuse
 scuta
 scute
@@ -18836,7 +18824,6 @@ syrma
 syrup
 syrus
 sysin
-sysop
 szell
 szold
 taata
@@ -21496,7 +21483,6 @@ wurly
 wurst
 wurtz
 wusih
-wussy
 wuzzy
 wwops
 wyano
@@ -21866,7 +21852,6 @@ zibet
 ziega
 ziffs
 zigan
-ziggy
 zihar
 zilch
 zilla
