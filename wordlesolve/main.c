@@ -253,11 +253,11 @@ void maybeGuessAnEliminatedWord(void)
             for (i = 0; i < WORD_LEN; i++) {
                 if (wordPtr[i] == ch) {
                     numOccur++;
-                    break;
                 }
             }
-            if (numOccur > letterCounts[ch].min)
+            if (numOccur > letterCounts[LETTER_TO_INDEX(ch)].min) {
                 currScore++;
+            }
         }
         
         if (currScore > bestScore) {
